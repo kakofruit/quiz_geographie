@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Capitales et Drapeaux du Monde</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(44, 62, 80, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            min-height: 500px;
+        }
+
+        .menu-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary { background: linear-gradient(45deg, #3498db, #2980b9); color: white; }
+        .btn-secondary { background: linear-gradient(45deg, #e67e22, #d35400); color: white; }
+        .btn-success { background: linear-gradient(45deg, #2ecc71, #27ae60); color: white; }
+        .btn-info { background: linear-gradient(45deg, #9b59b6, #8e44ad); color: white; }
+        .btn-danger { background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; }
+        .btn-light { background: linear-gradient(45deg, #95a5a6, #7f8c8d); color: white; }
+
+        .quiz-config {
+            display: none;
+            text-align: center;
+        }
+
+        .config-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .form-group {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        select, input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 150px;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .quiz-area {
+            display: none;
+            text-align: center;
+        }
+
+        .progress-container {
+            margin: 30px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .question-number {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #2c3e50;
+        }
+
+        .flag-container {
+            margin: 30px 0;
+        }
+
+        .flag-img {
+            max-width: 320px;
+            max-height: 200px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 3px solid #fff;
+        }
+
+        .answer-input {
+            margin: 30px 0;
+        }
+
+        .answer-input input {
+            font-size: 1.3rem;
+            padding: 15px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            border: 3px solid #3498db;
+            border-radius: 15px;
+        }
+
+        .score-display {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 20px 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .countries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .country-item {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .country-item:nth-child(even) {
+            background: #e8f4fd;
+            border-left-color: #e67e22;
+        }
+
+        .country-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .country-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .country-capital {
+            color: #2980b9;
+            font-size: 0.95rem;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #e74c3c;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-emoji {
+            font-size: 4rem;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .menu-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .answer-input input {
+                width: 100%;
+            }
+
+            .question-text {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 Quiz Capitales et Drapeaux du Monde 🏳️</h1>
+        </div>
+
+        <div class="main-content">
+            <!-- Menu Principal -->
+            <div id="main-menu" class="fade-in">
+                <div class="menu-buttons">
+                    <button class="btn btn-primary" onclick="configQuiz('capitales')">
+                        🎯 Quiz Capitales
+                    </button>
+                    <button class="btn btn-secondary" onclick="configQuiz('drapeaux')">
+                        🏳️ Quiz Drapeaux
+                    </button>
+                    <button class="btn btn-success" onclick="showCapitales()">
+                        📍 Voir les Capitales
+                    </button>
+                    <button class="btn btn-info" onclick="showDrapeaux()">
+                        🏳️ Voir les Drapeaux
+                    </button>
+                </div>
+            </div>
+
+            <!-- Configuration du Quiz -->
+            <div id="quiz-config" class="quiz-config">
+                <div class="config-section">
+                    <h2 id="quiz-mode-title">🎯 Configuration du Quiz</h2>
+
+                    <div class="form-group">
+                        <label for="region-select"><strong>Choisir la région :</strong></label>
+                        <select id="region-select" onchange="changeRegion()">
+                            <option value="Europe">Europe</option>
+                            <option value="Asie + Océanie">Asie + Océanie</option>
+                            <option value="Afrique">Afrique</option>
+                            <option value="Amérique">Amérique</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nb-questions"><strong>Nombre de questions :</strong></label>
+                        <input type="number" id="nb-questions" value="10" min="1" max="50">
+                        <span id="available-countries">(30 pays disponibles)</span>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-info" onclick="startQuiz()">▶️ Démarrer</button>
+                        <button class="btn btn-light" onclick="showMainMenu()">🏠 Retour</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone de Quiz -->
+            <div id="quiz-area" class="quiz-area">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div id="region-mode-display" class="question-number"></div>
+                    <div id="question-number" class="question-number"></div>
+                    <div id="question-text" class="question-text"></div>
+
+                    <div id="flag-container" class="flag-container hidden">
+                        <img id="flag-img" class="flag-img" alt="Drapeau">
+                    </div>
+
+                    <div class="answer-input">
+                        <label id="answer-label" for="user-answer"><strong>Votre réponse :</strong></label>
+                        <input type="text" id="user-answer" placeholder="Tapez votre réponse...">
+                    </div>
+
+                    <button id="validate-btn" class="btn btn-success" onclick="validateAnswer()">✅ Valider</button>
+
+                    <div id="score-display" class="score-display">Score: 0/0</div>
+                </div>
+
+                <button class="btn btn-light" onclick="showMainMenu()">🏠 Retour au Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour afficher les capitales -->
+    <div id="capitales-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeModal('capitales-modal')">&times;</span>
+                <h2>📍 Pays et Capitales du Monde</h2>
+                <select id="capitales-region-select" onchange="updateCapitalesDisplay()">
+                    <option value="Europe">Europe</option>
+                    <option value="Asie + Océanie">Asie + Océanie</option>
+                    <option value="Afrique">Afrique</option>
+                    <option value="Amérique">Amérique</option>
+                </select>
+            </div>
+            <div id="capitales-content" class="countries-grid"></div>
+        </div>
+    </div>
+
+    <!-- Modal pour afficher les drapeaux -->
+    <div id="drapeaux-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeModal('drapeaux-modal')">&times;</span>
+                <h2>🏳️ Drapeaux du Monde</h2>
+                <select id="drapeaux-region-select" onchange="updateDrapeauxDisplay()">
+                    <option value="Europe">Europe</option>
+                    <option value="Asie + Océanie">Asie + Océanie</option>
+                    <option value="Afrique">Afrique</option>
+                    <option value="Amérique">Amérique</option>
+                </select>
+            </div>
+            <div id="drapeaux-content" class="countries-grid"></div>
+        </div>
+    </div>
+
+    <script>
+// Données des pays et capitales
+const regions = {
+    "Europe": {
+        "France": "Paris", "Allemagne": "Berlin", "Italie": "Rome", "Espagne": "Madrid",
+        "Portugal": "Lisbonne", "Royaume-Uni": "Londres", "Irlande": "Dublin", "Pays-Bas": "Amsterdam",
+        "Belgique": "Bruxelles", "Suisse": "Berne", "Autriche": "Vienne", "Pologne": "Varsovie",
+        "République tchèque": "Prague", "Hongrie": "Budapest", "Slovaquie": "Bratislava",
+        "Slovénie": "Ljubljana", "Croatie": "Zagreb", "Grèce": "Athènes", "Bulgarie": "Sofia",
+        "Roumanie": "Bucarest", "Suède": "Stockholm", "Norvège": "Oslo", "Danemark": "Copenhague",
+        "Finlande": "Helsinki", "Estonie": "Tallinn", "Lettonie": "Riga", "Lituanie": "Vilnius",
+        "Ukraine": "Kiev", "Biélorussie": "Minsk", "Russie": "Moscou"
+    },
+    "Asie + Océanie": {
+        "Chine": "Pékin", "Japon": "Tokyo", "Inde": "New Delhi", "Corée du Sud": "Séoul",
+        "Thaïlande": "Bangkok", "Vietnam": "Hanoï", "Indonésie": "Jakarta", "Malaisie": "Kuala Lumpur",
+        "Philippines": "Manille", "Singapour": "Singapour", "Pakistan": "Islamabad", "Bangladesh": "Dacca",
+        "Sri Lanka": "Sri Jayawardenepura", "Myanmar": "Naypyidaw", "Cambodge": "Phnom Penh",
+        "Laos": "Vientiane", "Afghanistan": "Kaboul", "Iran": "Téhéran", "Irak": "Bagdad",
+        "Syrie": "Damas", "Jordanie": "Amman", "Liban": "Beyrouth", "Israël": "Jérusalem",
+        "Arabie Saoudite": "Riyad", "Émirats arabes unis": "Abou Dabi", "Qatar": "Doha",
+        "Koweït": "Koweït", "Oman": "Mascate", "Australie": "Canberra", "Nouvelle-Zélande": "Wellington",
+        "Papouasie-Nouvelle-Guinée": "Port Moresby", "Fidji": "Suva"
+    },
+    "Afrique": {
+        "Égypte": "Le Caire", "Maroc": "Rabat", "Algérie": "Alger", "Tunisie": "Tunis",
+        "Libye": "Tripoli", "Soudan": "Khartoum", "Éthiopie": "Addis-Abeba", "Kenya": "Nairobi",
+        "Tanzanie": "Dodoma", "Ouganda": "Kampala", "Rwanda": "Kigali", "Nigeria": "Abuja",
+        "Ghana": "Accra", "Côte d'Ivoire": "Yamoussoukro", "Sénégal": "Dakar", "Mali": "Bamako",
+        "Burkina Faso": "Ouagadougou", "Niger": "Niamey", "Tchad": "N'Djamena", "Cameroun": "Yaoundé",
+        "République centrafricaine": "Bangui", "République démocratique du Congo": "Kinshasa",
+        "Angola": "Luanda", "Zambie": "Lusaka", "Zimbabwe": "Harare", "Botswana": "Gaborone",
+        "Namibie": "Windhoek", "Afrique du Sud": "Le Cap", "Madagascar": "Antananarivo", "Maurice": "Port-Louis"
+    },
+    "Amérique": {
+        "États-Unis": "Washington", "Canada": "Ottawa", "Mexique": "Mexico", "Guatemala": "Guatemala",
+        "Belize": "Belmopan", "Salvador": "San Salvador", "Honduras": "Tegucigalpa", "Nicaragua": "Managua",
+        "Costa Rica": "San José", "Panama": "Panama", "Cuba": "La Havane", "Jamaïque": "Kingston",
+        "Haïti": "Port-au-Prince", "République dominicaine": "Saint-Domingue", "Brésil": "Brasília",
+        "Argentine": "Buenos Aires", "Chili": "Santiago", "Colombie": "Bogotá", "Venezuela": "Caracas",
+        "Pérou": "Lima", "Équateur": "Quito", "Bolivie": "Sucre", "Paraguay": "Asunción",
+        "Uruguay": "Montevideo", "Guyane": "Georgetown", "Suriname": "Paramaribo"
+    }
+};
+
+// Codes des pays pour les drapeaux
+const countryCodes = {
+    "France": "fr", "Allemagne": "de", "Italie": "it", "Espagne": "es", "Portugal": "pt",
+    "Royaume-Uni": "gb", "Irlande": "ie", "Pays-Bas": "nl", "Belgique": "be", "Suisse": "ch",
+    "Autriche": "at", "Pologne": "pl", "République tchèque": "cz", "Hongrie": "hu",
+    "Slovaquie": "sk", "Slovénie": "si", "Croatie": "hr", "Grèce": "gr", "Bulgarie": "bg",
+    "Roumanie": "ro", "Suède": "se", "Norvège": "no", "Danemark": "dk", "Finlande": "fi",
+    "Estonie": "ee", "Lettonie": "lv", "Lituanie": "lt", "Ukraine": "ua", "Biélorussie": "by",
+    "Russie": "ru", "Chine": "cn", "Japon": "jp", "Inde": "in", "Corée du Sud": "kr",
+    "Thaïlande": "th", "Vietnam": "vn", "Indonésie": "id", "Malaisie": "my", "Philippines": "ph",
+    "Singapour": "sg", "Pakistan": "pk", "Bangladesh": "bd", "Sri Lanka": "lk", "Myanmar": "mm",
+    "Cambodge": "kh", "Laos": "la", "Afghanistan": "af", "Iran": "ir", "Irak": "iq",
+    "Syrie": "sy", "Jordanie": "jo", "Liban": "lb", "Israël": "il", "Arabie Saoudite": "sa",
+    "Émirats arabes unis": "ae", "Qatar": "qa", "Koweït": "kw", "Oman": "om", "Australie": "au",
+    "Nouvelle-Zélande": "nz", "Papouasie-Nouvelle-Guinée": "pg", "Fidji": "fj", "Égypte": "eg",
+    "Maroc": "ma", "Algérie": "dz", "Tunisie": "tn", "Libye": "ly", "Soudan": "sd",
+    "Éthiopie": "et", "Kenya": "ke", "Tanzanie": "tz", "Ouganda": "ug", "Rwanda": "rw",
+    "Nigeria": "ng", "Ghana": "gh", "Côte d'Ivoire": "ci", "Sénégal": "sn", "Mali": "ml",
+    "Burkina Faso": "bf", "Niger": "ne", "Tchad": "td", "Cameroun": "cm", "République centrafricaine": "cf",
+    "République démocratique du Congo": "cd", "Angola": "ao", "Zambie": "zm", "Zimbabwe": "zw",
+    "Botswana": "bw", "Namibie": "na", "Afrique du Sud": "za", "Madagascar": "mg", "Maurice": "mu",
+    "États-Unis": "us", "Canada": "ca", "Mexique": "mx", "Guatemala": "gt", "Belize": "bz",
+    "Salvador": "sv", "Honduras": "hn", "Nicaragua": "ni", "Costa Rica": "cr", "Panama": "pa",
+    "Cuba": "cu", "Jamaïque": "jm", "Haïti": "ht", "République dominicaine": "do", "Brésil": "br",
+    "Argentine": "ar", "Chili": "cl", "Colombie": "co", "Venezuela": "ve", "Pérou": "pe",
+    "Équateur": "ec", "Bolivie": "bo", "Paraguay": "py", "Uruguay": "uy", "Guyane": "gy",
+    "Suriname": "sr"
+};
+// Variables globales
+let currentMode = '';
+let currentRegion = 'Europe';
+let currentCountries = [];
+let selectedCountries = [];
+let currentQuestion = 0;
+let score = 0;
+let totalQuestions = 0;
+let quizActive = false;
+
+// Fonctions utilitaires
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function levenshteinDistance(str1, str2) {
+    const matrix = [];
+    for (let i = 0; i <= str2.length; i++) {
+        matrix[i] = [i];
+    }
+    for (let j = 0; j <= str1.length; j++) {
+        matrix[0][j] = j;
+    }
+    for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1,
+                    matrix[i][j - 1] + 1,
+                    matrix[i - 1][j] + 1
+                );
+            }
+        }
+    }
+    return matrix[str2.length][str1.length];
+}
+
+function compareAnswers(userAnswer, correctAnswer) {
+    const user = userAnswer.toLowerCase().trim();
+    const correct = correctAnswer.toLowerCase().trim();
+
+    if (user === correct) return { isCorrect: true, type: 'exact' };
+
+    const similarity = 1 - (levenshteinDistance(user, correct) / Math.max(user.length, correct.length));
+    if (similarity >= 0.8) return { isCorrect: true, type: 'close' };
+
+    if (user.includes(correct) || correct.includes(user)) {
+        return { isCorrect: true, type: 'contains' };
+    }
+
+    return { isCorrect: false, type: 'different' };
+}
+
+// Fonctions de navigation
+function showMainMenu() {
+    document.getElementById('main-menu').style.display = 'block';
+    document.getElementById('quiz-config').style.display = 'none';
+    document.getElementById('quiz-area').style.display = 'none';
+    quizActive = false;
+}
+
+function configQuiz(mode) {
+    currentMode = mode;
+    document.getElementById('main-menu').style.display = 'none';
+    document.getElementById('quiz-config').style.display = 'block';
+
+    const title = mode === 'capitales' ? '🎯 Configuration Quiz Capitales' : '🏳️ Configuration Quiz Drapeaux';
+    document.getElementById('quiz-mode-title').textContent = title;
+
+    updateAvailableCountries();
+}
+
+function changeRegion() {
+    currentRegion = document.getElementById('region-select').value;
+    updateAvailableCountries();
+}
+
+function updateAvailableCountries() {
+    const countries = Object.keys(regions[currentRegion]);
+    const nbInput = document.getElementById('nb-questions');
+    nbInput.max = countries.length;
+    if (parseInt(nbInput.value) > countries.length) {
+        nbInput.value = countries.length;
+    }
+    document.getElementById('available-countries').textContent = `(${countries.length} pays disponibles)`;
+}
+
+// Fonctions de quiz
+function startQuiz() {
+    const nbQuestions = parseInt(document.getElementById('nb-questions').value);
+    const countries = Object.keys(regions[currentRegion]);
+
+    if (nbQuestions < 1 || nbQuestions > countries.length) {
+        alert(`Le nombre de questions doit être entre 1 et ${countries.length}`);
+        return;
+    }
+
+    totalQuestions = nbQuestions;
+    selectedCountries = shuffleArray(countries).slice(0, nbQuestions);
+    currentQuestion = 0;
+    score = 0;
+    quizActive = true;
+
+    document.getElementById('quiz-config').style.display = 'none';
+    document.getElementById('quiz-area').style.display = 'block';
+
+    // Afficher les informations du quiz
+    const regionModeDisplay = document.getElementById('region-mode-display');
+    regionModeDisplay.textContent = `${currentMode === 'capitales' ? '🎯 Quiz Capitales' : '🏳️ Quiz Drapeaux'} - Région : ${currentRegion}`;
+
+    // Réinitialiser les éléments du quiz
+    const validateBtn = document.getElementById('validate-btn');
+    const answerInputDiv = document.querySelector('.answer-input');
+
+    validateBtn.disabled = false;
+    validateBtn.style.display = 'block';
+    answerInputDiv.style.display = 'block';
+
+    // Réinitialiser la barre de progression
+    document.getElementById('progress-fill').style.width = '0%';
+
+    showQuestion();
+}
+
+function showQuestion() {
+    if (currentQuestion >= totalQuestions) {
+        endQuiz();
+        return;
+    }
+
+    const country = selectedCountries[currentQuestion];
+    const questionNumberEl = document.getElementById('question-number');
+    const questionTextEl = document.getElementById('question-text');
+    const flagContainer = document.getElementById('flag-container');
+    const userAnswerInput = document.getElementById('user-answer');
+    const scoreDisplay = document.getElementById('score-display');
+    const progressFill = document.getElementById('progress-fill');
+
+    // Afficher le numéro de question
+    questionNumberEl.textContent = `Question ${currentQuestion + 1} sur ${totalQuestions}`;
+
+    // Préparer la question selon le mode
+    let questionText = '';
+    if (currentMode === 'capitales') {
+        questionText = `Quelle est la capitale de ${country} ?`;
+        flagContainer.classList.add('hidden');
+    } else {
+        questionText = `De quel pays est ce drapeau ?`;
+        flagContainer.classList.remove('hidden');
+        const flagCode = countryCodes[country];
+        if (flagCode) {
+            const flagImg = document.getElementById('flag-img');
+            flagImg.src = `https://flagcdn.com/w320/${flagCode}.png`;
+            flagImg.alt = `Drapeau de ${country}`;
+        }
+    }
+
+    // Afficher la question
+    questionTextEl.textContent = questionText;
+    questionTextEl.style.color = '#2c3e50'; // Couleur par défaut
+
+    // Réinitialiser le champ de réponse
+    userAnswerInput.value = '';
+    userAnswerInput.focus();
+
+    // Mettre à jour le score et la progression
+    scoreDisplay.textContent = `Score: ${score}/${currentQuestion}`;
+    progressFill.style.width = `${(currentQuestion / totalQuestions) * 100}%`;
+}
+
+function validateAnswer() {
+    if (!quizActive) return;
+
+    const userInput = document.getElementById('user-answer').value.trim();
+    if (!userInput) {
+        alert("⚠️ Veuillez entrer une réponse.");
+        return;
+    }
+
+    const country = selectedCountries[currentQuestion];
+    const correctAnswer = currentMode === 'capitales' ? regions[currentRegion][country] : country;
+
+    const result = compareAnswers(userInput, correctAnswer);
+    const feedback = document.getElementById('question-text');
+
+    if (result.isCorrect) {
+        score++;
+        feedback.textContent = result.type === 'exact'
+            ? `✅ Parfait ! La bonne réponse était : ${correctAnswer}`
+            : `✅ Presque parfait ! (${correctAnswer})`;
+        feedback.style.color = '#27ae60';
+    } else {
+        feedback.textContent = `❌ Mauvaise réponse. La bonne réponse était : ${correctAnswer}`;
+        feedback.style.color = '#e74c3c';
+    }
+
+    currentQuestion++;
+
+    setTimeout(() => {
+        showQuestion();
+    }, 2500);
+}
+
+function endQuiz() {
+    const percentage = Math.round((score / totalQuestions) * 100);
+    let emoji = '';
+    let message = '';
+
+    if (percentage >= 90) {
+        emoji = '🏆';
+        message = 'Excellent ! Vous êtes un vrai expert !';
+    } else if (percentage >= 70) {
+        emoji = '🎉';
+        message = 'Très bien ! Bonne performance !';
+    } else if (percentage >= 50) {
+        emoji = '👍';
+        message = 'Pas mal ! Continuez à apprendre !';
+    } else {
+        emoji = '📚';
+        message = 'Il y a encore du travail, mais ne lâchez rien !';
+    }
+
+    const questionTextEl = document.getElementById('question-text');
+    questionTextEl.innerHTML = `
+        <div class="result-emoji">${emoji}</div>
+        <h2>Quiz terminé !</h2>
+        <p>Score final : <strong>${score}/${totalQuestions}</strong> (${percentage}%)</p>
+        <p>${message}</p>
+    `;
+
+    document.getElementById('question-number').textContent = '';
+    document.getElementById('flag-container').classList.add('hidden');
+    document.querySelector('.answer-input').style.display = 'none';
+    document.getElementById('validate-btn').style.display = 'none';
+    document.getElementById('score-display').textContent = `Score final: ${score}/${totalQuestions}`;
+    document.getElementById('progress-fill').style.width = '100%';
+
+    quizActive = false;
+}
+
+// Fonctions pour les modales
+function showCapitales() {
+    document.getElementById('capitales-modal').style.display = 'block';
+    updateCapitalesDisplay();
+}
+
+function showDrapeaux() {
+    document.getElementById('drapeaux-modal').style.display = 'block';
+    updateDrapeauxDisplay();
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+function updateCapitalesDisplay() {
+    const region = document.getElementById('capitales-region-select').value;
+    const content = document.getElementById('capitales-content');
+    const countries = regions[region];
+
+    let html = '';
+    for (const [country, capital] of Object.entries(countries)) {
+        html += `
+            <div class="country-item">
+                <div class="country-name">${country}</div>
+                <div class="country-capital">${capital}</div>
+            </div>
+        `;
+    }
+    content.innerHTML = html;
+}
+
+function updateDrapeauxDisplay() {
+    const region = document.getElementById('drapeaux-region-select').value;
+    const content = document.getElementById('drapeaux-content');
+    const countries = regions[region];
+
+    let html = '';
+    for (const [country, capital] of Object.entries(countries)) {
+        const flagCode = countryCodes[country];
+        if (flagCode) {
+            html += `
+                <div class="country-item">
+                    <div class="country-name">${country}</div>
+                    <img src="https://flagcdn.com/w80/${flagCode}.png"
+                         alt="Drapeau de ${country}"
+                         style="max-width: 80px; border-radius: 5px; margin-top: 10px;">
+                </div>
+            `;
+        }
+    }
+    content.innerHTML = html;
+}
+
+// Gestion des événements
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion de la touche Entrée pour valider
+    const answerInput = document.getElementById('user-answer');
+    if (answerInput) {
+        answerInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && quizActive) {
+                validateAnswer();
+            }
+        });
+    }
+
+    // Fermeture des modales en cliquant à l'extérieur
+    window.addEventListener('click', function(e) {
+        const capitalesModal = document.getElementById('capitales-modal');
+        const drapeauxModal = document.getElementById('drapeaux-modal');
+
+        if (e.target === capitalesModal) {
+            capitalesModal.style.display = 'none';
+        }
+        if (e.target === drapeauxModal) {
+            drapeauxModal.style.display = 'none';
+        }
+    });
+});
+
+// Rendre les fonctions disponibles globalement
+window.configQuiz = configQuiz;
+window.showCapitales = showCapitales;
+window.showDrapeaux = showDrapeaux;
+window.showMainMenu = showMainMenu;
+window.changeRegion = changeRegion;
+window.startQuiz = startQuiz;
+window.validateAnswer = validateAnswer;
+window.closeModal = closeModal;
+window.updateCapitalesDisplay = updateCapitalesDisplay;
+window.updateDrapeauxDisplay = updateDrapeauxDisplay;
+    </script>
